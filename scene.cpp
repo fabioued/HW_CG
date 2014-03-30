@@ -14,7 +14,7 @@ void Scene::load(const char *file, const char *base_dir){
     char s_obj[100];
 
 	while(fgets(s_obj, sizeof(s_obj), f) > 0){
-        models.emplace_back(s_obj);
+        models.emplace_back(s_obj, base_dir);
     }
 
     if(f)
