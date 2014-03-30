@@ -7,27 +7,27 @@
 
 #include <vector>
 
-class light {
+class Light {
 
 private:
 
-    class light_unit {
+    class LightUnit {
     public:
-        light_unit(const char *s);
+        LightUnit(const char *s);
         float position[3], ambient[3], diffuse[3], specular[3];
     };
 
 public:
 
-    light(const char *file, const char *base_dir);
-    light(const char *file);
-    light();
+    Light(const char *file, const char *base_dir);
+    Light(const char *file);
+    Light();
 
     void load(const char *file, const char *base_dir);
     void load(const char *file);
     void load();
 
-    std::vector<light_unit> lights;
+    std::vector<LightUnit> lights;
     float ambient[3];
 };
 

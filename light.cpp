@@ -2,11 +2,11 @@
 #include <cstring>
 #include "light.h"
 
-light::light_unit::light_unit(const char *s){
+Light::LightUnit::LightUnit(const char *s){
     sscanf(s, "light %f %f %f %f %f %f %f %f %f %f %f %f", &position[0], &position[1], &position[2], &ambient[0], &ambient[1] , &ambient[2], &diffuse[0], &diffuse[1], &diffuse[2], &specular[0], &specular[1], &specular[2]);
 }
 
-void light::load(const char *file, const char *base_dir){
+void Light::load(const char *file, const char *base_dir){
     char path[100];
     sprintf(path, "%s/%s", base_dir, file);
 
@@ -31,23 +31,23 @@ void light::load(const char *file, const char *base_dir){
         fclose(f);
 }
 
-void light::load(const char *file){
+void Light::load(const char *file){
     load(file, "light");
 }
 
-void light::load(){
+void Light::load(){
     load("test.light", "light");
 }
 
 
-light::light(const char *file, const char *base_dir){
+Light::Light(const char *file, const char *base_dir){
     load(file, base_dir);
 }
 
-light::light(const char *file){
+Light::Light(const char *file){
     load(file, "light");
 }
 
-light::light(){
+Light::Light(){
     load("test.light", "light");
 }

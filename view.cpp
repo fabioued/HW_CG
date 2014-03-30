@@ -1,7 +1,7 @@
 #include <cstdio>
 #include "view.h"
 
-void view::load(const char *file, const char *base_dir){
+void View::load(const char *file, const char *base_dir){
     char path[100];
     sprintf(path, "%s/%s", base_dir, file);
 
@@ -24,23 +24,23 @@ void view::load(const char *file, const char *base_dir){
         fclose(f);
 }
 
-void view::load(const char *file){
+void View::load(const char *file){
     load(file, "view");
 }
 
-void view::load(){
+void View::load(){
     load("test.view", "view");
 }
 
 
-view::view(const char *file, const char *base_dir){
+View::View(const char *file, const char *base_dir){
     load(file, base_dir);
 }
 
-view::view(const char *file){
+View::View(const char *file){
     load(file, "view");
 }
 
-view::view(){
+View::View(){
     load("test.view", "view");
 }

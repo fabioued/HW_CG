@@ -5,15 +5,15 @@
 #ifndef CG_VIEW_H_
 #define CG_VIEW_H_
 
-class view {
+class View {
 
 private:
 
 public:
 
-    view(const char *file, const char *base_dir);
-    view(const char *file);
-    view();
+    View(const char *file, const char *base_dir);
+    View(const char *file);
+    View();
 
     void load(const char *file, const char *base_dir);
     void load(const char *file);

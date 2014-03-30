@@ -1,6 +1,6 @@
 #include "scene.h"
 
-void scene::load(const char *file, const char *base_dir){
+void Scene::load(const char *file, const char *base_dir){
     char path[100];
     sprintf(path, "%s/%s", base_dir, file);
 
@@ -21,23 +21,23 @@ void scene::load(const char *file, const char *base_dir){
         fclose(f);
 }
 
-void scene::load(const char *file){
+void Scene::load(const char *file){
     load(file, "scene");
 }
 
-void scene::load(){
+void Scene::load(){
     load("test.scene", "scene");
 }
 
 
-scene::scene(const char *file, const char *base_dir){
+Scene::Scene(const char *file, const char *base_dir){
     load(file, base_dir);
 }
 
-scene::scene(const char *file){
+Scene::Scene(const char *file){
     load(file, "scene");
 }
 
-scene::scene(){
+Scene::Scene(){
     load("test.scene", "scene");
 }
