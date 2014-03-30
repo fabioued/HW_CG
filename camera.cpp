@@ -20,6 +20,23 @@ void Camera::motion(int x, int y){
     position[1] = y;
 }
 
+void Camera::keyboard(unsigned char key, int x, int y){
+    switch(key){
+        case 'w':
+            keyboard_up();
+            break;
+        case 'a':
+            keyboard_left();
+            break;
+        case 's':
+            keyboard_down();
+            break;
+        case 'd':
+            keyboard_right();
+            break;
+    }
+}
+
 //void motion(int x, int y){
 //    static Camera camera;
 //    camera.motion(x, y);
