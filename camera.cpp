@@ -2,19 +2,19 @@
 
 void Camera::motion(int x, int y){
     if(x == position[0] && y == position[1]){
-        stop();
+        mouse_stop();
         return;
     }
 
     if(x > position[0])
-        right();
+        mouse_right();
     else if(x < position[0])
-        left();
+        mouse_left();
 
     if(y > position[1])
-        down();
+        mouse_down();
     else if (y < position[1])
-        up();
+        mouse_up();
 
     position[0] = x;
     position[1] = y;
