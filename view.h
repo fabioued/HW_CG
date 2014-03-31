@@ -19,7 +19,7 @@ public:
     void load(const char *file);
     void load();
 
-    int eye[3], vat[3], vup[3], fovy, dnear, dfar, viewport[4];
+    double eye[3], vat[3], vup[3], fovy, dnear, dfar, viewport[4];
 };
 
 #endif

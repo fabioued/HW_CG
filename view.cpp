@@ -12,13 +12,13 @@ void View::load(const char *file, const char *base_dir){
 		return;
 	}
 
-    fscanf(f, "eye %d %d %d\n", &eye[0], &eye[1], &eye[2]);
-    fscanf(f, "vat %d %d %d\n", &vat[0], &vat[1], &vat[2]);
-    fscanf(f, "vup %d %d %d\n", &vup[0], &vup[1], &vup[2]);
-    fscanf(f, "fovy %d\n", &fovy);
-    fscanf(f, "dnear %d\n", &dnear);
-    fscanf(f, "dfar %d\n", &dfar);
-    fscanf(f, "viewport %d %d %d %d\n", &viewport[0], &viewport[1], &viewport[2], &viewport[3]);
+    fscanf(f, "eye %lf %lf %lf\n", &eye[0], &eye[1], &eye[2]);
+    fscanf(f, "vat %lf %lf %lf\n", &vat[0], &vat[1], &vat[2]);
+    fscanf(f, "vup %lf %lf %lf\n", &vup[0], &vup[1], &vup[2]);
+    fscanf(f, "fovy %lf\n", &fovy);
+    fscanf(f, "dnear %lf\n", &dnear);
+    fscanf(f, "dfar %lf\n", &dfar);
+    fscanf(f, "viewport %lf %lf %lf %lf\n", &viewport[0], &viewport[1], &viewport[2], &viewport[3]);
 
     if(f)
         fclose(f);
