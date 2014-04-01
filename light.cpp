@@ -12,14 +12,14 @@ void Light::load(const char *file, const char *base_dir){
 
     FILE *f = fopen(path , "r");
 
-	if (!f){
-		printf("Can't open light file '%s' !", path);
-		return;
-	}
+    if (!f){
+   	    printf("Can't open light file '%s' !", path);
+   	    return;
+    }
 
     char s_light[100];
 
-	while(fgets(s_light, sizeof(s_light), f) > 0){
+    while(fgets(s_light, sizeof(s_light), f) > 0){
         if(strncmp(s_light, "light", 5) == 0)
             lights.emplace_back(s_light);
         else
