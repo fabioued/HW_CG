@@ -72,13 +72,17 @@ void lighting(){
     // Lighting
     ////////////////////////////////////////
     glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
+
+    auto gl_light = GL_LIGHT0;
+
     glPushMatrix();
         for(const auto &i : light->lights){
-            glLightfv(GL_LIGHT0, GL_AMBIENT, i.ambient);
-            glLightfv(GL_LIGHT0, GL_SPECULAR, i.specular);
-            glLightfv(GL_LIGHT0, GL_DIFFUSE, i.diffuse);
-            glLightfv(GL_LIGHT0, GL_POSITION, i.position);
+            glLightfv(gl_light, GL_AMBIENT, i.ambient);
+            glLightfv(gl_light, GL_SPECULAR, i.specular);
+            glLightfv(gl_light, GL_DIFFUSE, i.diffuse);
+            glLightfv(gl_light, GL_POSITION, i.position);
+            glEnable(gl_light);
+            gl_light++;
         }
         glLightModelfv(GL_LIGHT_MODEL_AMBIENT, light->ambient);
     glPopMatrix();
