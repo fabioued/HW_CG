@@ -34,6 +34,9 @@ void Camera::keyboard(unsigned char key, int x, int y){
         case 'd':
             keyboard_right();
             break;
+        case 27:    //ESC
+            exit(0);
+            break;
     }
 }
 
