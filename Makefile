@@ -8,6 +8,7 @@ GL_FILES := $(wildcard GL/*.h)
 MAIN_FILE = src/main.cpp
 
 INC = -I src/include
+LIB = -L lib
 
 checkdirs:
 	@mkdir -p obj
@@ -16,10 +17,10 @@ obj/%.o: src/include/%.cpp
 	g++ $(CFLAGS) -c -o $@ $<
 
 test1: checkdirs $(OBJ_FILES)
-	$(CC) $(CFLAGS) $(GLFLAGS) $(INC) $(OBJ_FILES) -DTEST1 $(MAIN_FILE) -o test1.out
+	$(CC) $(CFLAGS) $(GLFLAGS) $(INC) $(LIB) $(OBJ_FILES) -DTEST1 $(MAIN_FILE) -o test1.out
 
 test2: checkdirs $(OBJ_FILES)
-	$(CC) $(CFLAGS) $(GLFLAGS) $(INC) $(OBJ_FILES) -DTEST2 $(MAIN_FILE) -o test2.out
+	$(CC) $(CFLAGS) $(GLFLAGS) $(INC) $(LIB) $(OBJ_FILES) -DTEST2 $(MAIN_FILE) -o test2.out
 
 clean:
 	rm -rf *.o *.out *.gch obj/
