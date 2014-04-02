@@ -2,13 +2,24 @@ CC = g++
 CFLAGS = -Wall -std=c++11
 GLFLAGS = -lGL -lGLU -lglut
 
-HEADERS = scene.h scene.cpp view.h view.cpp light.h light.cpp mesh.h mesh.cpp camera.h camera.cpp
+HEADERS := $(wildcard src/include/*.cpp)
+OBJ_FILES := $(addprefix obj/,$(notdir $(HEADERS:.cpp=.o)))
+GL_FILES := $(wildcard GL/*.h)
+MAIN_FILE = src/main.cpp
 
-test1:
-	$(CC) $(CFLAGS) $(GLFLAGS) $(HEADERS) -DTEST1 main.cpp -o test1.out
+INC = -I src/include
 
-test2:
-	$(CC) $(CFLAGS) $(GLFLAGS) $(HEADERS) -DTEST2 main.cpp -o test2.out
+checkdirs:
+	@mkdir -p obj
+
+obj/%.o: src/include/%.cpp
+	g++ $(CFLAGS) -c -o $@ $<
+
+test1: checkdirs $(OBJ_FILES)
+	$(CC) $(CFLAGS) $(GLFLAGS) $(INC) $(OBJ_FILES) -DTEST1 $(MAIN_FILE) -o test1.out
+
+test2: checkdirs $(OBJ_FILES)
+	$(CC) $(CFLAGS) $(GLFLAGS) $(INC) $(OBJ_FILES) -DTEST2 $(MAIN_FILE) -o test2.out
 
 clean:
-	rm -f *.o *.out *.gch
+	rm -rf *.o *.out *.gch obj/
