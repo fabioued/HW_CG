@@ -23,11 +23,13 @@ void motion(int x, int y){ camera->motion(x, y); }
 int main(int argc, char** argv){
 
 #ifdef TEST1
+    printf("[TEST1]\n");
     obj_database = "TestScene1/";
     scene  = new Scene("scene.scene", "TestScene1");
     light  = new Light("light.light", "TestScene1");
     view   = new View("view.view", "TestScene1");
 #elif TEST2
+    printf("[TEST2]\n");
     obj_database = "TestScene2/";
     scene  = new Scene("house.scene", "TestScene2");
     light  = new Light("house.light", "TestScene2");
@@ -61,10 +63,10 @@ void camera_setting(Camera *camera){
 
     // mouse
     camera->mouse_stop = [](){};
-    camera->mouse_up    = [](){ view->vat[2]-=5;};
-    camera->mouse_down  = [](){ view->vat[2]+=5;};
-    camera->mouse_left  = [](){ view->vat[0]-=5;};
-    camera->mouse_right = [](){ view->vat[0]+=5;};
+    camera->mouse_up    = [](){ view->vat[2]-=1;};
+    camera->mouse_down  = [](){ view->vat[2]+=1;};
+    camera->mouse_left  = [](){ view->vat[0]-=1;};
+    camera->mouse_right = [](){ view->vat[0]+=1;};
 }
 
 void lighting(){
