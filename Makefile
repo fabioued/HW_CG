@@ -20,7 +20,7 @@ main: checkdirs $(OBJ_FILES)
 	$(CC) $(CFLAGS) $(GLFLAGS) $(INC) $(LIB) $(OBJ_FILES) $(MAIN_FILE) -o main.out
 
 run: main
-	echo -e "ChessScene\nChess" | ./main.out
+	@echo -e "ChessScene\nChess" | ./main.out
 
 clean:
 	rm -rf *.o *.out *.gch obj/

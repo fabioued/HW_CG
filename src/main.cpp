@@ -25,10 +25,10 @@ int main(int argc, char** argv){
     char scene_name[100];
     char scene_dir[100];
 
-    printf("Please input the scene directory : ");
+    //printf("Please input the scene directory : ");
     scanf("%s", scene_dir);
 
-    printf("Please input the scene name : ");
+    //printf("Please input the scene name : ");
     scanf("%s", scene_name);
 
     printf("[%s]\n", scene_name);
