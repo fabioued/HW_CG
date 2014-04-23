@@ -10,6 +10,9 @@ MAIN_FILE = src/main.cpp
 INC = -I src/include
 LIB = -L lib
 
+run: main
+	@echo -e "ChessScene\nChess" | ./main.out
+
 checkdirs:
 	@mkdir -p obj
 
@@ -18,9 +21,6 @@ obj/%.o: src/include/%.cpp
 
 main: checkdirs $(OBJ_FILES)
 	$(CC) $(CFLAGS) $(GLFLAGS) $(INC) $(LIB) $(OBJ_FILES) $(MAIN_FILE) -o main.out
-
-run: main
-	@echo -e "ChessScene\nChess" | ./main.out
 
 clean:
 	rm -rf *.o *.out *.gch obj/
