@@ -16,11 +16,11 @@ checkdirs:
 obj/%.o: src/include/%.cpp
 	g++ $(CFLAGS) -c -o $@ $<
 
-test1: checkdirs $(OBJ_FILES)
-	$(CC) $(CFLAGS) $(GLFLAGS) $(INC) $(LIB) $(OBJ_FILES) -DTEST1 $(MAIN_FILE) -o test1.out
+main: checkdirs $(OBJ_FILES)
+	$(CC) $(CFLAGS) $(GLFLAGS) $(INC) $(LIB) $(OBJ_FILES) $(MAIN_FILE) -o main.out
 
-test2: checkdirs $(OBJ_FILES)
-	$(CC) $(CFLAGS) $(GLFLAGS) $(INC) $(LIB) $(OBJ_FILES) -DTEST2 $(MAIN_FILE) -o test2.out
+run: main
+	echo -e "ChessScene\nChess" | ./main.out
 
 clean:
 	rm -rf *.o *.out *.gch obj/

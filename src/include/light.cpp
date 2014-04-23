@@ -8,7 +8,7 @@ Light::LightUnit::LightUnit(const char *s){
 
 void Light::load(const char *file, const char *base_dir){
     char path[100];
-    sprintf(path, "%s/%s", base_dir, file);
+    sprintf(path, "%s/%s.light", base_dir, file);
 
     FILE *f = fopen(path , "r");
 
@@ -36,7 +36,7 @@ void Light::load(const char *file){
 }
 
 void Light::load(){
-    load("test.light", "light");
+    load("test", "light");
 }
 
 
@@ -49,5 +49,5 @@ Light::Light(const char *file){
 }
 
 Light::Light(){
-    load("test.light", "light");
+    load("test", "light");
 }

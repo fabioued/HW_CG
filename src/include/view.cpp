@@ -3,7 +3,7 @@
 
 void View::load(const char *file, const char *base_dir){
     char path[100];
-    sprintf(path, "%s/%s", base_dir, file);
+    sprintf(path, "%s/%s.view", base_dir, file);
 
     FILE *f = fopen(path , "r");
 
@@ -29,7 +29,7 @@ void View::load(const char *file){
 }
 
 void View::load(){
-    load("test.view", "view");
+    load("test", "view");
 }
 
 
@@ -42,5 +42,5 @@ View::View(const char *file){
 }
 
 View::View(){
-    load("test.view", "view");
+    load("test", "view");
 }

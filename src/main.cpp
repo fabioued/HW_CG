@@ -22,19 +22,21 @@ void motion(int x, int y){ camera->motion(x, y); }
 
 int main(int argc, char** argv){
 
-#ifdef TEST1
-    printf("[TEST1]\n");
-    obj_database = "TestScene1/";
-    scene  = new Scene("scene.scene", "TestScene1");
-    light  = new Light("light.light", "TestScene1");
-    view   = new View("view.view", "TestScene1");
-#elif TEST2
-    printf("[TEST2]\n");
-    obj_database = "TestScene2/";
-    scene  = new Scene("house.scene", "TestScene2");
-    light  = new Light("house.light", "TestScene2");
-    view   = new View("house.view", "TestScene2");
-#endif
+    char scene_name[100];
+    char scene_dir[100];
+
+    printf("Please input the scene directory : ");
+    scanf("%s", scene_dir);
+
+    printf("Please input the scene name : ");
+    scanf("%s", scene_name);
+
+    printf("[%s]\n", scene_name);
+
+    obj_database = scene_dir;
+    scene  = new Scene(scene_name, scene_dir);
+    light  = new Light(scene_name, scene_dir);
+    view   = new View(scene_name, scene_dir);
 
     camera = new Camera;
     camera_setting(camera);

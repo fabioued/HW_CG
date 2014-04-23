@@ -2,7 +2,7 @@
 
 void Scene::load(const char *file, const char *base_dir){
     char path[100];
-    sprintf(path, "%s/%s", base_dir, file);
+    sprintf(path, "%s/%s.scene", base_dir, file);
 
     FILE *f = fopen(path , "r");
 
@@ -26,7 +26,7 @@ void Scene::load(const char *file){
 }
 
 void Scene::load(){
-    load("test.scene", "scene");
+    load("test", "scene");
 }
 
 
@@ -39,5 +39,5 @@ Scene::Scene(const char *file){
 }
 
 Scene::Scene(){
-    load("test.scene", "scene");
+    load("test", "scene");
 }
