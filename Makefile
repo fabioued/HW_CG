@@ -1,6 +1,6 @@
 CC = g++
 CFLAGS = -Wall -std=c++11
-GLFLAGS = -lGL -lGLU -lglut
+GLFLAGS = -lGL -lGLU -lglut -lfreeimage
 
 HEADERS := $(wildcard src/include/*.cpp)
 OBJ_FILES := $(addprefix obj/,$(notdir $(HEADERS:.cpp=.o)))
