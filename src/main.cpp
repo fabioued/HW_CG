@@ -4,6 +4,11 @@
 #include "light.h"
 #include "GL/glut.h"
 #include "camera.h"
+#include "FreeImage.h"
+#include <cstring>
+
+#define TEX_NUM 4
+//#define MIPMAP
 
 extern const char *obj_database;
 
@@ -12,13 +17,19 @@ View   *view;
 Light  *light;
 Camera *camera;
 
+GLuint texObject[TEX_NUM];
+
 void display();
 void reshape(GLsizei , GLsizei);
+void _loadTexture(const char *filename, const int texnum);
+void loadTexture(const char *filename[]);
 void lighting();
 
 void camera_setting(Camera *camera);
 void keyboard(unsigned char key, int x, int y) { camera->keyboard(key, x, y); }
 void motion(int x, int y){ camera->motion(x, y); }
+
+void environmentMap(const char *filename[6]);
 
 int main(int argc, char** argv){
 
@@ -45,6 +56,24 @@ int main(int argc, char** argv){
 
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutCreateWindow("Computer Graphic");
+
+    const char* texfile[] = {
+        "ChessScene/Room.bmp",
+        "ChessScene/Grid.bmp",
+        "ChessScene/Wood.bmp"
+    };
+    loadTexture(texfile);
+
+    const char* env[] = {
+        "ChessScene/Env_positive_x.bmp",
+        "ChessScene/Env_positive_y.bmp",
+        "ChessScene/Env_positive_z.bmp",
+        "ChessScene/Env_negative_x.bmp",
+        "ChessScene/Env_negative_y.bmp",
+        "ChessScene/Env_negative_z.bmp"
+    };
+    environmentMap(env);
+
     glutKeyboardFunc(keyboard);
     glutPassiveMotionFunc(motion);
     glutDisplayFunc(display);
@@ -92,6 +121,73 @@ void lighting(){
     glPopMatrix();
 }
 
+void _loadTexture(const char *filename, const int texnum){
+    glBindTexture(GL_TEXTURE_2D, texObject[texnum]);
+    FIBITMAP *bitmap = FreeImage_Load(FreeImage_GetFileType(filename, 0), filename);
+    FIBITMAP *pImage = FreeImage_ConvertTo32Bits(bitmap);
+    int nWidth = FreeImage_GetWidth(pImage);
+    int nHeight = FreeImage_GetHeight(pImage);
+
+#ifdef MIPMAP
+#else
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, nWidth, nHeight,
+        0, GL_BGRA, GL_UNSIGNED_BYTE, (void*)FreeImage_GetBits(pImage));
+
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+    //glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+#endif
+    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+
+    FreeImage_Unload(pImage);
+}
+
+void loadTexture(const char *filename[]){
+    glGenTextures(TEX_NUM, texObject);
+    for(unsigned int i = 0; i < TEX_NUM - 1; i++){
+        _loadTexture(filename[i], i);
+    }
+}
+
+void environmentMap(const char *filename[6]){
+    // Cube : Bind Once, send six images
+    glBindTexture(GL_TEXTURE_CUBE_MAP, texObject[TEX_NUM - 1]);
+
+    FIBITMAP *bitmap;
+    FIBITMAP *pImage[6];
+
+    for(unsigned int i = 0; i < 6; i++){
+        bitmap = FreeImage_Load(FreeImage_GetFileType(filename[i], 0), filename[i]);
+        pImage[i] = FreeImage_ConvertTo32Bits(bitmap);
+    }
+
+    int nWidth = FreeImage_GetWidth(pImage[0]);
+    int nHeight = FreeImage_GetHeight(pImage[0]);
+
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGBA8, nWidth, nHeight,
+        0, GL_BGRA, GL_UNSIGNED_BYTE, (void*)FreeImage_GetBits(pImage[0]));
+
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, GL_RGBA8, nWidth, nHeight,
+        0, GL_BGRA, GL_UNSIGNED_BYTE, (void*)FreeImage_GetBits(pImage[1]));
+
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, GL_RGBA8, nWidth, nHeight,
+        0, GL_BGRA, GL_UNSIGNED_BYTE, (void*)FreeImage_GetBits(pImage[2]));
+
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, GL_RGBA8, nWidth, nHeight,
+        0, GL_BGRA, GL_UNSIGNED_BYTE, (void*)FreeImage_GetBits(pImage[3]));
+
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, GL_RGBA8, nWidth, nHeight,
+        0, GL_BGRA, GL_UNSIGNED_BYTE, (void*)FreeImage_GetBits(pImage[4]));
+
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_RGBA8, nWidth, nHeight,
+        0, GL_BGRA, GL_UNSIGNED_BYTE, (void*)FreeImage_GetBits(pImage[5]));
+
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+}
+
 void display(){
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -129,17 +225,58 @@ void display(){
     glMatrixMode(GL_MODELVIEW);
     glColor3f(1.0f, 1.0f, 1.0f);
 
-    glEnable(GL_TEXTURE_3D);
+    ////////////////////////////////////////
+    // Texture
+    ////////////////////////////////////////
+    glEnable(GL_TEXTURE_2D);
 
     glEnable(GL_NORMALIZE);
 
+    int texnum = -1;
+    const char *prev = "tmp";
     for(const auto &i : scene->models){
+        if(strcmp(prev, i.obj)){
+            texnum++;
+        }
+
+        glDisable(GL_TEXTURE_CUBE_MAP);
+        glDisable(GL_TEXTURE_2D);
+        glDisable(GL_TEXTURE_GEN_S);
+        glDisable(GL_TEXTURE_GEN_T);
+        glDisable(GL_TEXTURE_GEN_R);
+
+        if (texnum < 2) {
+            glDisable(GL_TEXTURE_2D);   //close texture1 before start
+
+            glActiveTexture(GL_TEXTURE0);
+            glEnable(GL_TEXTURE_2D);
+            glBindTexture(GL_TEXTURE_2D, texObject[texnum]);
+
+            if(texnum == 1){
+                glActiveTexture(GL_TEXTURE1);
+                glEnable(GL_TEXTURE_2D);
+                glBindTexture(GL_TEXTURE_2D, texObject[++texnum]);
+            }
+        } else if (texnum < 9) {
+            glActiveTexture(GL_TEXTURE0);
+            glEnable(GL_TEXTURE_2D);
+            glBindTexture(GL_TEXTURE_2D, 0);
+        } else {
+            glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
+            glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
+            glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
+            glEnable(GL_TEXTURE_GEN_S);
+            glEnable(GL_TEXTURE_GEN_T);
+            glEnable(GL_TEXTURE_GEN_R);
+            glEnable(GL_TEXTURE_CUBE_MAP);
+        }
+
+        prev = i.obj;
 
         glPushMatrix();
             glTranslatef(i.T[0], i.T[1], i.T[2]);
             glRotatef(i.Angle, i.R[0], i.R[1], i.R[2]);
             glScalef(i.S[0], i.S[1], i.S[2]);
-
 
             //copy from example ...
             int lastMaterial = -1;
@@ -172,7 +309,6 @@ void display(){
                 }
                 glEnd();
             }
-
 
         glPopMatrix();
     }
