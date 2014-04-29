@@ -60,7 +60,7 @@ int main(int argc, char** argv){
     const char* texfile[] = {
         "ChessScene/Room.bmp",
         "ChessScene/Grid.bmp",
-        "ChessScene/Wood.bmp"
+        "ChessScene/Wood.bmp",
     };
     loadTexture(texfile);
 
@@ -135,8 +135,6 @@ void _loadTexture(const char *filename, const int texnum){
         0, GL_BGRA, GL_UNSIGNED_BYTE, (void*)FreeImage_GetBits(pImage));
 #endif
 
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
-
 #ifdef MIPMAP
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
@@ -160,7 +158,6 @@ void loadTexture(const char *filename[]){
 void environmentMap(const char *filename[6]){
     // Cube : Bind Once, send six images
     glBindTexture(GL_TEXTURE_CUBE_MAP, texObject[TEX_NUM - 1]);
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 
     // Load Cube Map images
     FIBITMAP *bitmap;
@@ -257,7 +254,6 @@ void display(){
     ////////////////////////////////////////
     // Texture
     ////////////////////////////////////////
-    glEnable(GL_TEXTURE_2D);
 
     glEnable(GL_NORMALIZE);
 
@@ -273,31 +269,47 @@ void display(){
         glDisable(GL_TEXTURE_GEN_S);
         glDisable(GL_TEXTURE_GEN_T);
         glDisable(GL_TEXTURE_GEN_R);
+        glDisable(GL_TEXTURE0);
+        glDisable(GL_TEXTURE1);
 
-        if (texnum < 2) {
-            glDisable(GL_TEXTURE_2D);
+        if (texnum == 0) {
 
             glActiveTexture(GL_TEXTURE0);
             glEnable(GL_TEXTURE_2D);
             glBindTexture(GL_TEXTURE_2D, texObject[texnum]);
+            glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 
-            if(texnum == 1){
-                glActiveTexture(GL_TEXTURE1);
-                glEnable(GL_TEXTURE_2D);
-                glBindTexture(GL_TEXTURE_2D, texObject[++texnum]);
-            }
+        } else if (texnum == 1) {
+
+            glActiveTexture(GL_TEXTURE0);
+            glEnable(GL_TEXTURE_2D);
+            glBindTexture(GL_TEXTURE_2D, texObject[texnum]);
+            glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+            glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
+
+            glActiveTexture(GL_TEXTURE1);
+            glEnable(GL_TEXTURE_2D);
+            glBindTexture(GL_TEXTURE_2D, texObject[++texnum]);
+            glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+            glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
 
         } else if (texnum < 9) {
+
             glActiveTexture(GL_TEXTURE0);
             glEnable(GL_TEXTURE_2D);
             glBindTexture(GL_TEXTURE_2D, 0);
+            glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+
         } else {
+
             glEnable(GL_TEXTURE_GEN_S);
             glEnable(GL_TEXTURE_GEN_T);
             glEnable(GL_TEXTURE_GEN_R);
             glEnable(GL_TEXTURE_CUBE_MAP_EXT);
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, TEX_NUM-1);
+            glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+
         }
 
         prev = i.obj;
