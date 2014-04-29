@@ -1,14 +1,14 @@
 #include <cstdio>
+#include <cstring>
+#include "GL/glut.h"
+#include "FreeImage.h"
 #include "scene.h"
 #include "view.h"
 #include "light.h"
-#include "GL/glut.h"
 #include "camera.h"
-#include "FreeImage.h"
-#include <cstring>
 
 #define TEX_NUM 4
-//#define MIPMAP
+#define MIPMAP
 
 extern const char *obj_database;
 
@@ -128,17 +128,14 @@ void _loadTexture(const char *filename, const int texnum){
     int nWidth = FreeImage_GetWidth(pImage);
     int nHeight = FreeImage_GetHeight(pImage);
 
-#ifdef MIPMAP
-#else
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, nWidth, nHeight,
         0, GL_BGRA, GL_UNSIGNED_BYTE, (void*)FreeImage_GetBits(pImage));
 
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
-    //glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-#endif
+
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
     FreeImage_Unload(pImage);
@@ -154,7 +151,9 @@ void loadTexture(const char *filename[]){
 void environmentMap(const char *filename[6]){
     // Cube : Bind Once, send six images
     glBindTexture(GL_TEXTURE_CUBE_MAP, texObject[TEX_NUM - 1]);
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 
+    // Load Cube Map images
     FIBITMAP *bitmap;
     FIBITMAP *pImage[6];
 
@@ -166,6 +165,15 @@ void environmentMap(const char *filename[6]){
     int nWidth = FreeImage_GetWidth(pImage[0]);
     int nHeight = FreeImage_GetHeight(pImage[0]);
 
+#ifdef MIPMAP
+    gluBuild2DMipmaps(GL_TEXTURE_CUBE_MAP_POSITIVE_X_EXT, GL_RGBA, nWidth, nHeight, GL_BGRA, GL_UNSIGNED_BYTE, (void*)FreeImage_GetBits(pImage[0]));
+    gluBuild2DMipmaps(GL_TEXTURE_CUBE_MAP_POSITIVE_Y_EXT, GL_RGBA, nWidth, nHeight, GL_BGRA, GL_UNSIGNED_BYTE, (void*)FreeImage_GetBits(pImage[1]));
+    gluBuild2DMipmaps(GL_TEXTURE_CUBE_MAP_POSITIVE_Z_EXT, GL_RGBA, nWidth, nHeight, GL_BGRA, GL_UNSIGNED_BYTE, (void*)FreeImage_GetBits(pImage[2]));
+    gluBuild2DMipmaps(GL_TEXTURE_CUBE_MAP_NEGATIVE_X_EXT, GL_RGBA, nWidth, nHeight, GL_BGRA, GL_UNSIGNED_BYTE, (void*)FreeImage_GetBits(pImage[3]));
+    gluBuild2DMipmaps(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y_EXT, GL_RGBA, nWidth, nHeight, GL_BGRA, GL_UNSIGNED_BYTE, (void*)FreeImage_GetBits(pImage[4]));
+    gluBuild2DMipmaps(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_EXT, GL_RGBA, nWidth, nHeight, GL_BGRA, GL_UNSIGNED_BYTE, (void*)FreeImage_GetBits(pImage[5]));
+
+#else
     glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGBA8, nWidth, nHeight,
         0, GL_BGRA, GL_UNSIGNED_BYTE, (void*)FreeImage_GetBits(pImage[0]));
 
@@ -183,9 +191,21 @@ void environmentMap(const char *filename[6]){
 
     glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_RGBA8, nWidth, nHeight,
         0, GL_BGRA, GL_UNSIGNED_BYTE, (void*)FreeImage_GetBits(pImage[5]));
+#endif
 
+#ifdef MIPMAP
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+#else
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+#endif
+
+    glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
+    glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
+    glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
+
+    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 }
 
 void display(){
@@ -262,13 +282,12 @@ void display(){
             glEnable(GL_TEXTURE_2D);
             glBindTexture(GL_TEXTURE_2D, 0);
         } else {
-            glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
-            glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
-            glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
             glEnable(GL_TEXTURE_GEN_S);
             glEnable(GL_TEXTURE_GEN_T);
             glEnable(GL_TEXTURE_GEN_R);
-            glEnable(GL_TEXTURE_CUBE_MAP);
+            glEnable(GL_TEXTURE_CUBE_MAP_EXT);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, TEX_NUM-1);
         }
 
         prev = i.obj;
