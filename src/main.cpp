@@ -128,13 +128,22 @@ void _loadTexture(const char *filename, const int texnum){
     int nWidth = FreeImage_GetWidth(pImage);
     int nHeight = FreeImage_GetHeight(pImage);
 
+#ifdef MIPMAP
+    gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA, nWidth, nHeight, GL_BGRA, GL_UNSIGNED_BYTE, (void*)FreeImage_GetBits(pImage));
+#else
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, nWidth, nHeight,
         0, GL_BGRA, GL_UNSIGNED_BYTE, (void*)FreeImage_GetBits(pImage));
+#endif
 
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 
+#ifdef MIPMAP
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+#else
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+#endif
 
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
@@ -266,7 +275,7 @@ void display(){
         glDisable(GL_TEXTURE_GEN_R);
 
         if (texnum < 2) {
-            glDisable(GL_TEXTURE_2D);   //close texture1 before start
+            glDisable(GL_TEXTURE_2D);
 
             glActiveTexture(GL_TEXTURE0);
             glEnable(GL_TEXTURE_2D);
@@ -277,6 +286,7 @@ void display(){
                 glEnable(GL_TEXTURE_2D);
                 glBindTexture(GL_TEXTURE_2D, texObject[++texnum]);
             }
+
         } else if (texnum < 9) {
             glActiveTexture(GL_TEXTURE0);
             glEnable(GL_TEXTURE_2D);
