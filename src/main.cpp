@@ -305,7 +305,7 @@ void display(){
             glEnable(GL_TEXTURE_GEN_S);
             glEnable(GL_TEXTURE_GEN_T);
             glEnable(GL_TEXTURE_GEN_R);
-            glEnable(GL_TEXTURE_CUBE_MAP_EXT);
+            glEnable(GL_TEXTURE_CUBE_MAP);
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, TEX_NUM-1);
             glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
